@@ -1,4 +1,6 @@
 name: Rebuild and deploy data files
+permissions:
+  contents: write
 
 on:
   schedule:
