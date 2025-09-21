@@ -10,31 +10,33 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
       with:
         ref: main
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
+    - name: Set up Python 3
+      uses: actions/setup-python@v6
       with:
-        python-version: 3.8
+        python-version: 3
+        check-latest: true
+        cache: pip
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install fontTools youseedee
+        pip install --upgrade fontTools youseedee
     - name: Fetch youseedee database
       run: python -m youseedee 0x20
     - name: Fetch Noto fonts
-      uses: actions/checkout@v2
+      uses: actions/checkout@v5
       with:
         repository: notofonts/notofonts.github.io
         path: notofonts.github.io
     - name: Fetch Noto CJK
-      uses: actions/checkout@v2
+      uses: actions/checkout@v5
       with:
         repository: googlefonts/noto-cjk
         path: noto-cjk
     - name: Fetch Noto Emoji
-      uses: actions/checkout@v2
+      uses: actions/checkout@v5
       with:
         repository: googlefonts/noto-emoji
         path: noto-emoji
@@ -42,6 +44,6 @@ jobs:
       run: python gather-codepoint-data.py
     - name: Also make text gaplist
       run: python gaps.py > gaplist.txt
-    - uses: stefanzweifel/git-auto-commit-action@v4
+    - uses: stefanzweifel/git-auto-commit-action@v6
       with:
         file_pattern: blocks/*.json blocks.json fontfiles.json gaplist.txt
