@@ -29,16 +29,22 @@ jobs:
       with:
         repository: notofonts/notofonts.github.io
         path: notofonts.github.io
+        sparse-checkout: fonts/*/unhinted/ttf/*Regular.?tf
+        sparse-checkout-cone-mode: false
     - name: Fetch Noto CJK
       uses: actions/checkout@v5
       with:
         repository: googlefonts/noto-cjk
         path: noto-cjk
+        sparse-checkout: Sans/OTF/*/*Regular.?tf
+        sparse-checkout-cone-mode: false
     - name: Fetch Noto Emoji
       uses: actions/checkout@v5
       with:
         repository: googlefonts/noto-emoji
         path: noto-emoji
+        sparse-checkout: fonts/NotoColorEmoji.ttf
+        sparse-checkout-cone-mode: false
     - name: Gather data
       run: python gather-codepoint-data.py
     - name: Also make text gaplist
