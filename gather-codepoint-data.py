@@ -1,17 +1,21 @@
-from fontTools.ttLib import TTFont
 import glob
-from collections import defaultdict
-from youseedee import ucd_data, database
-from os.path import basename
 import json
+from collections import defaultdict
+from sys import version_info
+
+from fontTools.ttLib import TTFont
+from youseedee import parse_file_ranges, ucd_data
+
+if version_info[0] != 3 or version_info[1] < 10:
+    raise Exception("Python 3.10 or later is required.")
 
 font_files = {}
-noto_codepoints = defaultdict(list)
+noto_codepoints: dict[int, list[str]] = defaultdict(list)
 
 sources = [
-    "notofonts.github.io/fonts/*/unhinted/ttf/*Regular.?tf",
-    "noto-cjk/Sans/OTF/*/*Regular.?tf",
-    "noto-emoji/fonts/NotoColorEmoji.ttf"
+    "notofonts.github.io/fonts/Noto*/unhinted/ttf/Noto*-Regular.ttf",
+    "noto-cjk/Sans/OTF/*/NotoSansCJK??-Regular.otf",
+    "noto-emoji/fonts/NotoColorEmoji.ttf",
 ]
 for source in sources:
     for fontfile in glob.glob(source):
@@ -21,12 +25,8 @@ for source in sources:
         for k in font.getBestCmap().keys():
             noto_codepoints[k].append(font_name)
 
-def fontsort(font):
-    if font in ["Arimo", "Tinos", "Cousine"]:
-        return 'ZZZ'+font
-    return font
 
-block_ranges = sorted(database["Blocks.txt"]["reader"]("Blocks.txt"), key=lambda b:b[0])
+block_ranges = sorted(parse_file_ranges("Blocks.txt"))
 blocks = []
 for ix, (start, end, name) in enumerate(block_ranges):
     if (
@@ -39,7 +39,7 @@ for ix, (start, end, name) in enumerate(block_ranges):
     print("Processing %s" % name)
     coverage = "all"
     has_some = False
-    cps = {}
+    cps: dict[int, dict[str, str | bool | list[str]]] = {}
     summary = ""
     for cp in range(start, end + 1):
         ucd = ucd_data(cp)
@@ -58,7 +58,7 @@ for ix, (start, end, name) in enumerate(block_ranges):
             coverage = "partial"
         if cp in noto_codepoints and noto_codepoints[cp]:
             has_some = True
-            cps[cp]["fonts"] = list(sorted(noto_codepoints[cp], key=fontsort))
+            cps[cp]["fonts"] = list(sorted(noto_codepoints[cp]))
             if len(noto_codepoints[cp]) > 1:
                 summary += "M"
             else:
@@ -75,8 +75,8 @@ for ix, (start, end, name) in enumerate(block_ranges):
     ages = [cp["age"] for cp in cps.values()]
     if all(a == ages[0] for a in ages):
         this_block["age"] = ages[0]
-        for cp in cps.values():
-            del cp["age"]
+        for cpd in cps.values():
+            del cpd["age"]
     if coverage == "all":
         fontset = [cp["fonts"] for cp in cps.values() if "fonts" in cp]
         if all(f == fontset[0] for f in fontset[1:]):
@@ -95,4 +95,4 @@ for ix, (start, end, name) in enumerate(block_ranges):
     blocks.append(summary_block)
 
 json.dump(blocks, open("blocks.json", "w"))
-json.dump(font_files, open("fontfiles.json", "w"))
+json.dump(dict(sorted(font_files.items())), open("fontfiles.json", "w"))

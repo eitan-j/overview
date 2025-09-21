@@ -1,15 +1,19 @@
 import json
 from collections import Counter
+from sys import version_info
+
+if version_info[0] != 3 or version_info[1] < 9:
+    raise Exception("Python 3.9 or later is required.")
 
 blocks = json.load(open("blocks.json"))
 incomplete = [x for x in blocks if x["coverage"] != "all"]
-by_age = Counter()
+by_age: Counter[str] = Counter()
 total_gaps = 0
 print("By block:")
 for i in incomplete:
     this_block = json.load(open("blocks/block-%03i.json" % i["ix"]))
     missing = {k: v for k, v in this_block["cps"].items() if "fonts" not in v}
-    mini_by_age = Counter()
+    mini_by_age: Counter[str] = Counter()
     for cp, info in missing.items():
         age = info.get("age", this_block.get("age"))
         name = info.get("name")
@@ -21,8 +25,12 @@ for i in incomplete:
     if len(mini_by_age) == 1:
         print("  %s (%s): %i" % (i["name"], age, len(missing)))
     else:
-        sorted_by_age = sorted(list(mini_by_age.keys()), key=lambda x: float(x))
-        ages = ", ".join("%s: %i" % (age, mini_by_age[age]) for age in sorted_by_age)
+        sorted_by_age = sorted(
+            list(mini_by_age.keys()), key=lambda x: float(x)
+        )
+        ages = ", ".join(
+            "%s: %i" % (age, mini_by_age[age]) for age in sorted_by_age
+        )
         print("  %s: %i (%s)" % (i["name"], len(missing), ages))
 
     if len(missing) < 200 and this_block["coverage"] != "none":
