@@ -1,9 +1,7 @@
+from __future__ import annotations
+
 import json
 from collections import Counter
-from sys import version_info
-
-if version_info[0] != 3 or version_info[1] < 9:
-    raise Exception("Python 3.9 or later is required.")
 
 blocks = json.load(open("blocks.json"))
 incomplete = [x for x in blocks if x["coverage"] != "all"]

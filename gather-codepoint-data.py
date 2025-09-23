@@ -1,13 +1,17 @@
+from __future__ import annotations
+
 import glob
 import json
 from collections import defaultdict
-from sys import version_info
 
 from fontTools.ttLib import TTFont
 from youseedee import parse_file_ranges, ucd_data
 
-if version_info[0] != 3 or version_info[1] < 10:
-    raise Exception("Python 3.10 or later is required.")
+# TODO: force download
+# it will only check if data is more than 3 mos old
+# it could happen if a new emporor is unexpectedly coronated
+# or something
+# i dont think the VM caches this anyways
 
 font_files = {}
 noto_codepoints: dict[int, list[str]] = defaultdict(list)

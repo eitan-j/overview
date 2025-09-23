@@ -1,2 +1,3 @@
-fonttools
-youseedee
+fonttools>=4.59.0
+youseedee>=0.6.0
+-c constraints.txt

@@ -1,0 +1,10 @@
+# youseedee
+requests>=2.32.5    # security and stability
+filelock
+platformdirs        # >=4.3
+
+# requests
+charset_normalizer  # >=2,<4 # i dont think we ever reach this
+idna                # >=2.5<4 # nor this
+urllib3>=2.5.0      # security fixes # >=1.21.1,<3
+certifi>=2025.08.03 # better to have recent certs # >=2017.4.17
