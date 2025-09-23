@@ -51,7 +51,7 @@ function appendSummaryBlock(ix, mydata) {
   }
 
   var title = $('<div class="title">');
-  title.html(`<h5>${mydata.name}</h5>`);
+  title.html(`<h5>$.find{mydata.name}</h5>`);
   mydiv.append(title);
 
   var range = $('<div class="range">');
