@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import glob
 import json
 from collections import defaultdict
@@ -9,7 +7,7 @@ from youseedee import parse_file_ranges, ucd_data
 
 # TODO: force download
 # it will only check if data is more than 3 mos old
-# it could happen if a new emporor is unexpectedly coronated
+# it could happen if a new emperor is unexpectedly coronated
 # or something
 # i dont think the VM caches this anyways
 
